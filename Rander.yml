@@ -1,1 +1,40 @@
-
+services:
+  - type: worker
+    name: vcfighter
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 -m VCFIGHTERS
+    envVars:
+      - key: API_ID
+        sync: false
+      - key: API_HASH
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: OWNER_ID
+        sync: false
+      - key: LOG_CHANNEL
+        sync: false
+      - key: SUDO_USERS
+        sync: false
+      - key: SUPPORT_URL
+        sync: false
+      - key: SUPPORT_CHANNEL
+        sync: false
+      - key: STARTUP_SESSIONS
+        sync: false
+      - key: DEFAULT_MODE
+        value: dm
+      - key: DEFAULT_STREAM_TYPE
+        value: audio
+      - key: DEFAULT_QUALITY
+        value: medium
+      - key: DB_NAME
+        value: vcfighter
+      - key: PYTHON_VERSION
+        value: 3.11.0
+        
