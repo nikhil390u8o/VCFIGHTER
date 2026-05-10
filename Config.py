@@ -57,7 +57,7 @@ BOT_TOKEN = _get("BOT_TOKEN", required=True)
 #  REQUIRED — Database
 # ══════════════════════════════════════════════════════════════
 
-MONGO_URI = _get("MONGO_URI", required=True)
+MONGO_URI = _get("MONGO_URI", default="")
 DB_NAME   = _get("DB_NAME",   default="vcfighter")
 
 # ══════════════════════════════════════════════════════════════
