@@ -11,7 +11,7 @@ log = LOGGER("VCFIGHTER")
 
 
 def validate_config():
-    required = ["API_ID", "API_HASH", "BOT_TOKEN", "MONGO_URI", "OWNER_ID"]
+    required = ["API_ID", "API_HASH", "BOT_TOKEN", "OWNER_ID"]
     missing = [k for k in required if getattr(Config, k, None) is None]
     if missing:
         LOGGER("Config").error(f"Missing config values: {missing}")
