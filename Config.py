@@ -1,135 +1,71 @@
-import os
-import sys
-
-from dotenv import load_dotenv
-
 # ══════════════════════════════════════════════════════════════
-#  VCFIGHTER — Config
-#  Loads from .env file or system environment variables
-#  Copy .env.example → .env and fill in your values
+#  VCFIGHTER — Config (Direct Variables — Paste Your Values)
 # ══════════════════════════════════════════════════════════════
 
-load_dotenv()
+# ── REQUIRED — Telegram ───────────────────────────────────────
+API_ID    = 0                   # apna API ID yahan likho (int)
+API_HASH  = ""                  # apna API HASH yahan likho
+BOT_TOKEN = ""                  # apna BOT TOKEN yahan likho
 
+# ── REQUIRED — Owner ─────────────────────────────────────────
+OWNER_ID  = 0                   # apna Telegram user ID yahan likho (int)
 
-def _get(key: str, default=None, required: bool = False):
-    val = os.environ.get(key, default)
-    if required and not val:
-        print(f"[VCFIGHTER] ❌ Missing required config: {key}")
-        sys.exit(1)
-    return val
+# ── OPTIONAL — Sudo Users ────────────────────────────────────
+SUDO_USERS: list[int] = []      # e.g. [123456, 789012]
 
+# ── OPTIONAL — Log Channel ───────────────────────────────────
+LOG_CHANNEL = 0                 # log channel ID (int), 0 = off
 
-def _int(key: str, default: int, required: bool = False) -> int:
-    val = _get(key, str(default), required)
-    try:
-        return int(val)
-    except (TypeError, ValueError):
-        print(f"[VCFIGHTER] ⚠️  {key} must be an integer. Using default: {default}")
-        return default
+# ── OPTIONAL — Startup String Sessions ───────────────────────
+STARTUP_SESSIONS: list[str] = []  # e.g. ["session1", "session2"]
 
+# ── OPTIONAL — PyTgCalls Defaults ────────────────────────────
+DEFAULT_STREAM_TYPE       = "audio"   # "audio" | "video"
+DEFAULT_QUALITY           = "medium"  # "low" | "medium" | "high"
+DEFAULT_NOISE_SUPPRESSION = False
 
-def _bool(key: str, default: bool = False) -> bool:
-    val = _get(key, str(default)).strip().lower()
-    return val in ("true", "1", "yes", "on")
+# ── OPTIONAL — FFmpeg Defaults ───────────────────────────────
+DEFAULT_VOLUME     = 1.0       # 1.0 = 100%
+DEFAULT_BASS       = 0         # 0 to 40
+DEFAULT_PITCH      = "normal"  # "normal" | "demon" | "chipmunk"
+DEFAULT_ECHO       = False
+DEFAULT_COMPRESSOR = False
+DEFAULT_LIMITER    = False
 
+# ── OPTIONAL — VC Behaviour ──────────────────────────────────
+DEFAULT_MODE      = "dm"          # "dm" | "auto"
+RECORDINGS_DIR    = "recordings"
+MAX_RECORDING_AGE = 3600          # seconds
 
-def _list(key: str, default: list | None = None) -> list[int]:
-    raw = _get(key, "")
-    if not raw:
-        return default or []
-    try:
-        return [int(x.strip()) for x in raw.split(",") if x.strip()]
-    except ValueError:
-        print(f"[VCFIGHTER] ⚠️  {key} must be comma-separated integers.")
-        return default or []
+# ── OPTIONAL — Branding ──────────────────────────────────────
+BOT_NAME    = "VCFighter"
+BOT_VERSION = "2.0"
+SUPPORT_URL = "https://t.me/Zcziiy"
+SOURCE_URL  = "https://github.com/YOURNAME/VCFIGHTER"
 
+# ── OPTIONAL — Support Links ─────────────────────────────────
+SUPPORT_CHAT    = "https://t.me/Zcziiy"
+SUPPORT_CHANNEL = "https://t.me/Zcziiy"
 
-# ══════════════════════════════════════════════════════════════
-#  REQUIRED — Telegram
-# ══════════════════════════════════════════════════════════════
-
-API_ID    = _int("API_ID",    0, required=True)
-API_HASH  = _get("API_HASH",  required=True)
-BOT_TOKEN = _get("BOT_TOKEN", required=True)
-
-# ══════════════════════════════════════════════════════════════
-#  REQUIRED — Database
-# ══════════════════════════════════════════════════════════════
-
-MONGO_URI = _get("MONGO_URI", default="")
-DB_NAME   = _get("DB_NAME",   default="vcfighter")
-
-# ══════════════════════════════════════════════════════════════
-#  REQUIRED — Owner
-# ══════════════════════════════════════════════════════════════
-
-OWNER_ID = _int("OWNER_ID", 0, required=True)
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — Sudo Users
-#  Comma-separated IDs: 123456,789012
-# ══════════════════════════════════════════════════════════════
-
-SUDO_USERS: list[int] = _list("SUDO_USERS", default=[])
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — Logger / Log Channel
-# ══════════════════════════════════════════════════════════════
-
-LOG_CHANNEL = _int("LOG_CHANNEL", 0)
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — PyTgCalls defaults
-#  These are overridden by /config panel values in DB
-# ══════════════════════════════════════════════════════════════
-
-DEFAULT_STREAM_TYPE       = _get("DEFAULT_STREAM_TYPE",       default="audio")    # audio | video
-DEFAULT_QUALITY           = _get("DEFAULT_QUALITY",           default="medium")   # low | medium | high
-DEFAULT_NOISE_SUPPRESSION = _bool("DEFAULT_NOISE_SUPPRESSION", default=False)
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — FFmpeg defaults
-#  Overridden by /config → FFmpeg panel values in DB
-# ══════════════════════════════════════════════════════════════
-
-DEFAULT_VOLUME     = float(_get("DEFAULT_VOLUME",     default="1.0"))   # 1.0 = 100%
-DEFAULT_BASS       = _int("DEFAULT_BASS",             default=0)        # 0 to 40
-DEFAULT_PITCH      = _get("DEFAULT_PITCH",            default="normal") # normal | demon | chipmunk
-DEFAULT_ECHO       = _bool("DEFAULT_ECHO",            default=False)
-DEFAULT_COMPRESSOR = _bool("DEFAULT_COMPRESSOR",      default=False)
-DEFAULT_LIMITER    = _bool("DEFAULT_LIMITER",         default=False)
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — VC Behaviour
-# ══════════════════════════════════════════════════════════════
-
-DEFAULT_MODE      = _get("DEFAULT_MODE", default="dm")    # dm | auto
-RECORDINGS_DIR    = _get("RECORDINGS_DIR", default="recordings")
-MAX_RECORDING_AGE = _int("MAX_RECORDING_AGE", default=3600)  # seconds — cleanup old recordings
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — Startup String Sessions (comma-separated)
-#  Fallback if no userbots in DB yet
-# ══════════════════════════════════════════════════════════════
-
-STARTUP_SESSIONS: list[str] = [
-    s.strip()
-    for s in _get("STARTUP_SESSIONS", default="").split(",")
-    if s.strip()
+# ── OPTIONAL — Bot Pictures ──────────────────────────────────
+VC_PICS: list[str] = [
+    "https://files.catbox.moe/eje8y8.jpeg",
+    "https://files.catbox.moe/ey2jzp.jpeg",
+    "https://files.catbox.moe/ah5y0f.jpeg",
+    "https://files.catbox.moe/we4yju.jpeg",
 ]
 
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — Branding
-# ══════════════════════════════════════════════════════════════
+# ── OPTIONAL — Start Animation ───────────────────────────────
+START_FIRE_EFFECT = True
+FIRE_FRAME_DELAY  = 0.4
+DING_DONG_DELETE  = True
 
-BOT_NAME    = _get("BOT_NAME",    default="VCFighter")
-BOT_VERSION = _get("BOT_VERSION", default="2.0")
-SUPPORT_URL = _get("SUPPORT_URL", default="https://t.me/Zcziiy")
-SOURCE_URL  = _get("SOURCE_URL",  default="https://github.com/YOURNAME/VCFIGHTER")
+# ── DB (unused — MongoDB hata diya) ──────────────────────────
+MONGO_URI = ""
+DB_NAME   = "vcfighter"
 
 # ══════════════════════════════════════════════════════════════
-#  DERIVED / CONSTANTS
+#  CONSTANTS (mat chhedo)
 # ══════════════════════════════════════════════════════════════
 
 AUDIO_QUALITIES = {
@@ -150,34 +86,3 @@ BASS_LEVELS = {
     30: "Earthquake",
     40: "💀 MAX",
 }
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — Support & Community Links
-# ══════════════════════════════════════════════════════════════
-
-SUPPORT_CHAT    = _get("SUPPORT_CHAT",    default="https://t.me/Zcziiy")       # Support group link
-SUPPORT_CHANNEL = _get("SUPPORT_CHANNEL", default="https://t.me/Zcziiy")       # Updates channel link
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — Bot Pictures (used in /start, /help etc)
-#  Comma-separated direct image URLs
-# ══════════════════════════════════════════════════════════════
-
-_raw_pics = _get("VC_PICS", default="")
-VC_PICS: list[str] = (
-    [p.strip() for p in _raw_pics.split(",") if p.strip()]
-    if _raw_pics else [
-        "https://files.catbox.moe/eje8y8.jpeg",
-        "https://files.catbox.moe/ey2jzp.jpeg",
-        "https://files.catbox.moe/ah5y0f.jpeg",
-        "https://files.catbox.moe/we4yju.jpeg",
-    ]
-)
-
-# ══════════════════════════════════════════════════════════════
-#  OPTIONAL — Start Animation
-# ══════════════════════════════════════════════════════════════
-
-START_FIRE_EFFECT  = _bool("START_FIRE_EFFECT",  default=True)   # Fire effect on /start
-FIRE_FRAME_DELAY   = float(_get("FIRE_FRAME_DELAY", default="0.4"))
-DING_DONG_DELETE   = _bool("DING_DONG_DELETE",   default=True)   # Delete animation after
